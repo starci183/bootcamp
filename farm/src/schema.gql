@@ -1,0 +1,29 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Author {
+  id: Int!
+  firstName: String
+  lastName: String
+}
+
+type Post {
+  id: Int!
+  title: String!
+  content: String!
+}
+
+type Query {
+  author: Author!
+  post(input: PostInput!): Post!
+}
+
+input PostInput {
+  id: Int!
+}
+
+type Mutation {
+  createCat1(input: PostInput!): Post!
+  createCat2(input: PostInput!): Post!
+}
