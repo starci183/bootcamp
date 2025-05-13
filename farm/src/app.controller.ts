@@ -1,12 +1,15 @@
-import { Body, Controller, Get, Post, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserEntity } from './entities/user.entity';
 import { Cat } from './schema/cat.schema';
 import { IsString, IsNumber, Min, MaxLength, MinLength, Matches,  } from 'class-validator';
 import { LoggingInterceptor } from './logging.interceptor';
 import { TransformInterceptor } from './transform.interceptor';
-import { JwtGuard } from './jwt.guard';
+//import { JwtGuard } from './jwt.guard';
 import * as jwt from 'jsonwebtoken';
+import { JwtAuthGuard } from './passport/jwt-auth.guard';
+import { request, Request } from 'express';
+import { User } from './passport/user.decorator';
 export const IsCuongName = () => Matches(/^cuong$/, { message: 'Name must be cuong' });
 
 // interface khong xai dc voi class-validator, => class
@@ -41,14 +44,21 @@ export class AppController {
   //@UseInterceptors(LoggingInterceptor, TransformInterceptor)
   // cho cai endpoint su dung interceptor
   //endpoint da duoc bao ve = jwt
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('cats')
   createCat(@Body() request: CatRequest): Promise<Cat> {
     return this.appService.createCat(request);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('cats')
-  getCats(): Promise<Cat[]> {
+  getCats(
+    @User() user: { userId: number }
+  ): Promise<Cat[]> {
+    // passport nay no gan thong tin user vao request.user
+    // query cai nay la lay user tu request.user
+    console.log(`Cuong userId: ${user.userId}`);
+    // dung userId de query thong tin nguoi dung voi jwt nay o db - CRUD gi day...
     return this.appService.getCats();
   }
 
@@ -63,7 +73,11 @@ export class AppController {
   }
 
   @Get('get-token')
-  getToken(): Promise<string> {
+  getToken(
+    // nestjs co 1 loai params dac biet, @Req() la request
+    @Req() request: Request
+  ): Promise<string> {
+    console.log(request);
     return this.appService.getToken();
   }
 
@@ -73,5 +87,10 @@ export class AppController {
       return jwt.sign({ userId: 1 }, 'cuongdz', { expiresIn: '1h' });
     }
     throw new UnauthorizedException("Invalid username or password");
+  }
+
+  @Get('users')
+  getUsers(): Promise<UserEntity[]> {
+    return this.appService.getUsers();
   }
 }

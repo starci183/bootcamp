@@ -16,12 +16,19 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { GraphqlDemoModule } from './graphql-demo/graphql-demo.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { PassportModule } from './passport/passport.module';
+import { CronModule } from './cron/cron.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AppCacheModule } from './cache/cache.module';
+import Redis from 'ioredis'
 
 @Module({
   imports: [
     // import math module nay vao thi moi xai dc cai math service
     MathModule,
     CountModule,
+    ScheduleModule.forRoot(),
+    AppCacheModule,
     // import cái database module vào để anh xài database
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -33,6 +40,18 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       entities: [
         UserEntity
       ],
+      cache: {
+        type: 'ioredis',
+        options: {
+          host: 'localhost',
+          port: 6401,
+          password: "Cuong123_A",
+          // password: 'your_password', // Nếu có
+        },
+        ignoreErrors: true,
+        duration: 1000000,
+        alwaysEnabled: false,
+      },
       synchronize: true,
     }),
     // import user repository
@@ -50,6 +69,8 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()], 
     }),
+    PassportModule,
+    CronModule,
 
     GraphqlDemoModule
   ],

@@ -37,6 +37,12 @@ export class AppService {
     })
   }
 
+  async getUsers(): Promise<UserEntity[]> {
+    return this.userRepository.find({
+      cache: true
+    });
+  }
+
   async createCat(request: CatRequest): Promise<Cat> {
     return this.catModel.create({
       name: request.name,
@@ -64,7 +70,7 @@ export class AppService {
     // tao ra 1 jwt token, voi content la { userId: 1 }
     // va dung key la 'cuongdz'
     // va thoi gian het han la 1h
-    throw new InternalServerErrorException("Error");
+    //throw new InternalServerErrorException("Error");
     return jwt.sign({ userId: 1 }, 'cuongdz', { expiresIn: '1h' });
   }
 }
