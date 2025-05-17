@@ -21,7 +21,7 @@ import { CronModule } from './cron/cron.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppCacheModule } from './cache/cache.module';
 import Redis from 'ioredis'
-
+import { HelloModule } from './websocket';
 @Module({
   imports: [
     // import math module nay vao thi moi xai dc cai math service
@@ -72,7 +72,8 @@ import Redis from 'ioredis'
     PassportModule,
     CronModule,
 
-    GraphqlDemoModule
+    GraphqlDemoModule,
+    HelloModule
   ],
   controllers: [AppController],
   providers: [AppService, 
