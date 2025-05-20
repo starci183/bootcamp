@@ -22,6 +22,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AppCacheModule } from './cache/cache.module';
 import Redis from 'ioredis'
 import { HelloModule } from './websocket';
+import { HealthModule } from './healthz/healthz.module';
+import { MailModule } from './mail/mail.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     // import math module nay vao thi moi xai dc cai math service
@@ -30,6 +33,27 @@ import { HelloModule } from './websocket';
     ScheduleModule.forRoot(),
     AppCacheModule,
     // import cái database module vào để anh xài database
+    HealthModule,
+    MailModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        // 1 phut 1 request
+        {
+          ttl: 60000,
+          limit: 1,
+        },
+        // 10 phut 30 request
+        {
+          ttl: 600000,
+          limit: 30,
+        },
+        // 20 phut 45 request
+        {
+          ttl: 1200000,
+          limit: 45,
+        },
+      ],
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

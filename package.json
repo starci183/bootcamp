@@ -1,8 +1,13 @@
 {
   "dependencies": {
     "@nestjs/passport": "^11.0.5",
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/csurf": "^1.11.5"
   }
 }
